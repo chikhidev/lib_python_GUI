@@ -4,12 +4,12 @@ from user import User
 from admin_view import show_admin_view
 from user_view import show_user_view
 
-# Initialize global variables for user login
 logged_in_user_id = None
 is_admin = False
 ADMIN_PASSWORD = "admin"
 ADMIN_LOGIN = "admin"
 ADMIN = "__ID__ADMIN__"
+
 
 def main():
     root = tk.Tk()
@@ -17,23 +17,32 @@ def main():
     root.configure(bg="white")
 
     role_frame = tk.Frame(root, bg="white")
+    root.minsize(width=640, height=480)
+    root.configure(bg="white")
+
 
     def choose_login_role(role):
-        role_frame.pack_forget()  # Hide the role selection frame
+        role_frame.pack_forget()
 
         global login_label, login_entry, password_label, password_entry, login_button
-        login_label = tk.Label(root, text=f"Enter {role} login:", bg="white", fg="black")
+        login_label = tk.Label(
+            root, text=f"Saisissez le login {role} :", bg="white", fg="black"
+        )
         login_label.pack()
         login_entry = tk.Entry(root, bg="white")
         login_entry.pack()
 
         if role == "admin":
-            password_label = tk.Label(root, text="Enter admin password:", bg="white", fg="black")
+            password_label = tk.Label(
+                root, text="Saisissez le mot de passe admin :", bg="white", fg="black"
+            )
             password_label.pack()
             password_entry = tk.Entry(root, show="*", bg="white")
             password_entry.pack()
 
-        login_button = tk.Button(root, text="Login", command=lambda: login(role), bg="blue", fg="white")
+        login_button = tk.Button(
+            root, text="Connexion", command=lambda: login(role), bg="blue", fg="white"
+        )
         login_button.pack()
 
     def login(role):
@@ -42,27 +51,43 @@ def main():
         user_password = password_entry.get() if role == "admin" else None
 
         if user_login:
-            if role == "admin" and user_login == ADMIN_LOGIN and (not user_password or user_password == ADMIN_PASSWORD):
+            if (
+                role == "admin"
+                and user_login == ADMIN_LOGIN
+                and (not user_password or user_password == ADMIN_PASSWORD)
+            ):
                 logged_in_user_id = ADMIN
                 is_admin = True
-                messagebox.showinfo("Login Successful", "Logged in as an administrator.")
+                messagebox.showinfo(
+                    "Connexion Réussie", "Connecté en tant qu'administrateur."
+                )
                 clear_login_view()
                 show_admin_view(root, logged_in_user_id, logout_callback)
             elif role == "user":
-                users = User.get_users()  # You should implement this function in your 'User' module
+                users = (
+                    User.get_users()
+                )
                 for user in users:
-                    if user["login"] == user_login and (not user_password or user["password"] == user_password):
+                    if user["login"] == user_login and (
+                        not user_password or user["password"] == user_password
+                    ):
                         logged_in_user_id = user["user_id"]
-                        messagebox.showinfo("Login Successful", "Logged in as a user.")
+                        messagebox.showinfo(
+                            "Connexion Réussie", "Connecté en tant qu'utilisateur."
+                        )
                         clear_login_view()
                         show_user_view(root, logged_in_user_id, logout_callback)
                         return
 
-                messagebox.showerror("Login Failed", "Invalid login credentials.")
+                messagebox.showerror(
+                    "Échec de la Connexion", "Identifiants de connexion invalides."
+                )
             else:
-                messagebox.showerror("Login Failed", "Invalid login role.")
+                messagebox.showerror(
+                    "Échec de la Connexion", "Rôle de connexion invalide."
+                )
         else:
-            messagebox.showerror("Login Failed", "Please enter a login.")
+            messagebox.showerror("Échec de la Connexion", "Veuillez saisir un login.")
 
     def clear_login_view():
         login_label.destroy()
@@ -80,18 +105,37 @@ def main():
         root.destroy()
         main()
 
-    role_label = tk.Label(role_frame, text="Select a login role:", bg="white", fg="black")
+    role_label = tk.Label(
+        role_frame, text="Sélectionnez un rôle de connexion :", bg="white", fg="black"
+    )
     role_label.pack()
 
-    admin_button = tk.Button(role_frame, text="Admin Login", command=lambda: choose_login_role("admin"), bg="blue", width=15, relief=tk.FLAT, fg="white")
+    admin_button = tk.Button(
+        role_frame,
+        text="Connexion Admin",
+        command=lambda: choose_login_role("admin"),
+        bg="blue",
+        width=15,
+        relief=tk.FLAT,
+        fg="white",
+    )
     admin_button.pack()
 
-    user_button = tk.Button(role_frame, text="User Login", command=lambda: choose_login_role("user"), width=15, bg="blue", relief=tk.FLAT, fg="white")
+    user_button = tk.Button(
+        role_frame,
+        text="Connexion Utilisateur",
+        command=lambda: choose_login_role("user"),
+        width=15,
+        bg="blue",
+        relief=tk.FLAT,
+        fg="white",
+    )
     user_button.pack()
 
     role_frame.pack()
 
     root.mainloop()
+
 
 if __name__ == "__main__":
     main()
