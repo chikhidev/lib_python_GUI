@@ -60,6 +60,3 @@ def show_admin_view(root, user_id, logout_callback):
     right_content_label = tk.Label(right_content_frame, text="Sélectionnez une option dans le menu de gauche.")
     right_content_label.pack()
 
-root = tk.Tk()
-show_admin_view(root, "admin", root.quit)
-root.mainloop()
