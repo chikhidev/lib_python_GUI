@@ -4,6 +4,7 @@ from user import User
 from book import Book
 from borrow import Borrow
 from user_manage import UserManage
+from tkinter import ttk
 
 MAX_BOOKS_PER_STUDENT = 3
 
@@ -13,7 +14,6 @@ def show_admin_view(root, user_id, logout_callback):
 
     admin_window.geometry("+100+100")
     admin_window.attributes('-zoomed', 1)
-
 
     logged_in_user_id = user_id
 
@@ -25,6 +25,7 @@ def show_admin_view(root, user_id, logout_callback):
     left_menu_frame.configure(bg="#f5f4f2")
     main_paned_window.add(left_menu_frame)
 
+    global right_content_frame
     right_content_frame = tk.Frame(main_paned_window)
     right_content_frame.configure(bg="white")
     main_paned_window.add(right_content_frame)
@@ -37,7 +38,7 @@ def show_admin_view(root, user_id, logout_callback):
         "Ajouter Utilisateur": lambda: User.add_user(),
         "Afficher Utilisateurs": lambda: User.display_users(),
         "Ajouter Livre": lambda: Book.add_book(),
-        "Afficher Livres": lambda: Book.display_books(),
+        "Afficher Livres": lambda: display_books_view(),
         "Emprunter Livre": lambda: Borrow.borrow_book(logged_in_user_id, input("ID du livre à emprunter : ")),
         "Afficher Livres Empruntés": lambda: Borrow.display_borrowed_books(),
         "Gérer Comptes Utilisateur": lambda: UserManage.manage_user_accounts(),
@@ -57,6 +58,47 @@ def show_admin_view(root, user_id, logout_callback):
         button.pack()
         button.config(anchor=tk.W)
 
+    global right_content_label
     right_content_label = tk.Label(right_content_frame, text="Sélectionnez une option dans le menu de gauche.")
     right_content_label.pack()
 
+def clear_right_content_frame():
+    # Destroy all widgets in right_content_frame
+    for widget in right_content_frame.winfo_children():
+        widget.destroy()
+
+def display_books_view():
+    clear_right_content_frame()  # Clear existing widgets
+
+    books_to_show = Book.get_books()
+
+    tree = ttk.Treeview(right_content_frame, columns=("ID", "Titre", "Auteur", "Éditeur", "ISBN", "Exemplaires", "Année"), show="headings")
+    tree.heading("ID", text="ID")
+    tree.heading("Titre", text="Titre")
+    tree.heading("Auteur", text="Auteur")
+    tree.heading("Éditeur", text="Éditeur")
+    tree.heading("ISBN", text="ISBN")
+    tree.heading("Exemplaires", text="Exemplaires")
+    tree.heading("Année", text="Année")
+
+    for book in books_to_show:
+        tree.insert("", tk.END, values=(
+            book.get('book_id', ''),
+            book.get('title', ''),
+            book.get('author', ''),
+            book.get('publisher', ''),
+            book.get('isbn', ''),
+            book.get('num_copies', ''),
+            book.get('year', '')
+        ))
+
+    tree.pack(expand=True, fill=tk.BOTH)
+    tree.column("ID", width=50)
+    tree.column("Titre", width=150)
+    tree.column("Auteur", width=100)
+    tree.column("Éditeur", width=100)
+    tree.column("ISBN", width=100)
+    tree.column("Exemplaires", width=50)
+    tree.column("Année", width=50)
+
+# ... (your other code remains unchanged)
